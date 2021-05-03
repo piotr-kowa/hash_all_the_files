@@ -2,6 +2,7 @@ import io
 import hashlib
 import zlib
 
+
 def md5sum(src, length=io.DEFAULT_BUFFER_SIZE):
     md5 = hashlib.md5()
     with io.open(src, mode="rb") as fd:
