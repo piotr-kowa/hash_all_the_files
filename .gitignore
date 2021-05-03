@@ -3,6 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+#projest_spec
+*.md5
+data*
+
+#PyCharm
+.idea
+
 # C extensions
 *.so
 
