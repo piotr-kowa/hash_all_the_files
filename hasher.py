@@ -5,10 +5,15 @@ import zlib
 
 def md5sum(src, length=io.DEFAULT_BUFFER_SIZE):
     md5 = hashlib.md5()
-    with io.open(src, mode="rb") as fd:
-        for chunk in iter(lambda: fd.read(length), b''):
-            md5.update(chunk)
-    return md5.hexdigest()
+    try:
+        with io.open(src, mode="rb") as fd:
+            for chunk in iter(lambda: fd.read(length), b''):
+                md5.update(chunk)
+        return md5.hexdigest()
+    except PermissionError as e:
+        print(e)
+        return "00000000000000000000000000000000"
+
 
 
 def crc32(src, length=io.DEFAULT_BUFFER_SIZE):
