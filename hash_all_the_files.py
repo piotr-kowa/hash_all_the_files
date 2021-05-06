@@ -1,6 +1,7 @@
 import os
 import hasher
 from fileProps import *
+from raiTimer import RaiTimer
 
 
 class PathChanger:
@@ -48,6 +49,6 @@ def do_for_dir_recursively(directory):
     for dirpath, dirs, files in os.walk(current_dir_rel_path):
         do_for_dir(files, dirpath)
 
-
+timer = RaiTimer()
 test_path = "./data"
 do_for_dir_recursively(test_path)
