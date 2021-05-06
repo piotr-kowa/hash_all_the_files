@@ -1,5 +1,6 @@
 import os
 import hasher
+from fileProps import *
 
 
 class PathChanger:
@@ -13,7 +14,7 @@ class PathChanger:
 
 class FileWriter:
     def __init__(self, filename):
-        self.f = open(filename, "w")
+        self.f = open(filename, "w", newline='\n')
 
     def write(self, content):
         self.f.write(content)
@@ -28,8 +29,10 @@ def create_check_sum_file_for_dir(files, dirpath):
     md5_sum_file = FileWriter(full_md5_file_path)
     for filename in files:
         full_file_path = os.path.join(dirpath, filename)
+        file_props = FileProps(full_file_path)
+        md5_sum_file.write(file_props.getStringRow())
         md5_sum = hasher.md5sum(full_file_path)
-        md5_sum_file.write(md5_sum + " " + filename + "\n")
+        md5_sum_file.write(md5_sum + " " + filename + "\n\n")
 
 
 def do_for_dir(files, dirpath):

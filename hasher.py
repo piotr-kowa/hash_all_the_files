@@ -15,7 +15,6 @@ def md5sum(src, length=io.DEFAULT_BUFFER_SIZE):
         return "00000000000000000000000000000000"
 
 
-
 def crc32(src, length=io.DEFAULT_BUFFER_SIZE):
     crc_sum = 0
     with io.open(src, mode="rb") as fd:
