@@ -24,31 +24,40 @@ class FileWriter:
         self.f.close()
 
 
+def get_file_info(full_file_path):
+    file_props = FileProps(full_file_path)
+    md5_sum = hasher.md5sum(full_file_path)
+    filename = os.path.basename(full_file_path)
+    return file_props.getStringRow() + md5_sum + " " + filename + "\n\n"
+
+
 def create_check_sum_file_for_dir(files, dirpath):
-    full_md5_file_path = os.path.join(dirpath, os.path.basename(os.path.abspath(dirpath)) + "_checksum.md5")
+    full_md5_file_path = os.path.join(dirpath, "_" + os.path.basename(os.path.abspath(dirpath)) + "_checksum.md5")
     print("creating: " + full_md5_file_path + " for " + str(len(files)) + " files")
     md5_sum_file = FileWriter(full_md5_file_path)
     for filename in files:
         full_file_path = os.path.join(dirpath, filename)
-        file_props = FileProps(full_file_path)
-        md5_sum_file.write(file_props.getStringRow())
-        md5_sum = hasher.md5sum(full_file_path)
-        md5_sum_file.write(md5_sum + " " + filename + "\n\n")
+        md5_sum_file.write(get_file_info(full_file_path))
+
+
+def filter_out_md5_files(filelist):
+    return list(filter(lambda f: f[-4:] != ".md5", filelist))
 
 
 def do_for_dir(files, dirpath):
-    filter_out_md5_files = lambda f: f[-4:] != ".md5"
-    filtered_files = list(filter(filter_out_md5_files, files))
+    filtered_files = filter_out_md5_files(files)
     if len(filtered_files) > 0:
         create_check_sum_file_for_dir(filtered_files, dirpath)
 
 
 def do_for_dir_recursively(directory):
-    path_changer = PathChanger(directory)
+    rai = PathChanger(directory)
     current_dir_rel_path = ".\\"
     for dirpath, dirs, files in os.walk(current_dir_rel_path):
         do_for_dir(files, dirpath)
 
+
+from manual_test_dirpath import test_path
+
 timer = RaiTimer()
-test_path = "./data"
 do_for_dir_recursively(test_path)

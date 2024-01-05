@@ -7,6 +7,9 @@ __pycache__/
 *.md5
 data*
 
+#testing_data
+manual_test*
+
 #PyCharm
 .idea
 
