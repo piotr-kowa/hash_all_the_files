@@ -1,6 +1,7 @@
 import os
 import hasher
 from fileProps import *
+from raiMemoryMeasure import RaiMemoryMeasure
 from raiTimer import RaiTimer
 
 
@@ -24,40 +25,48 @@ class FileWriter:
         self.f.close()
 
 
-def get_file_info(full_file_path):
+def get_file_info(full_file_path, dirpath):
     file_props = FileProps(full_file_path)
     md5_sum = hasher.md5sum(full_file_path)
-    filename = os.path.basename(full_file_path)
+    filename = os.path.relpath(full_file_path, dirpath)
     return file_props.getStringRow() + md5_sum + " " + filename + "\n\n"
-
-
-def create_check_sum_file_for_dir(files, dirpath):
-    full_md5_file_path = os.path.join(dirpath, "_" + os.path.basename(os.path.abspath(dirpath)) + "_checksum.md5")
-    print("creating: " + full_md5_file_path + " for " + str(len(files)) + " files")
-    md5_sum_file = FileWriter(full_md5_file_path)
-    for filename in files:
-        full_file_path = os.path.join(dirpath, filename)
-        md5_sum_file.write(get_file_info(full_file_path))
 
 
 def filter_out_md5_files(filelist):
     return list(filter(lambda f: f[-4:] != ".md5", filelist))
 
 
-def do_for_dir(files, dirpath):
-    filtered_files = filter_out_md5_files(files)
-    if len(filtered_files) > 0:
-        create_check_sum_file_for_dir(filtered_files, dirpath)
+def create_check_sum_file_for_dir(files, dirpath):
+    files = filter_out_md5_files(files)
+    if len(files) < 1:
+        return
+
+    full_md5_file_path = os.path.join(dirpath, "_" + os.path.basename(os.path.abspath(dirpath)) + "_checksum.md5")
+    print("creating: " + full_md5_file_path + " for " + str(len(files)) + " files")
+
+    md5_sum_file = FileWriter(full_md5_file_path)
+    for filename in files:
+        full_file_path = os.path.join(dirpath, filename)
+        md5_sum_file.write(get_file_info(full_file_path, dirpath))
 
 
 def do_for_dir_recursively(directory):
-    rai = PathChanger(directory)
+    rai_dir = PathChanger(directory)
+    rai_timer = RaiTimer()
+    rai_memory = RaiMemoryMeasure()
+
     current_dir_rel_path = ".\\"
     for dirpath, dirs, files in os.walk(current_dir_rel_path):
-        do_for_dir(files, dirpath)
+        create_check_sum_file_for_dir(files, dirpath)
+        print("dirpath:: ", dirpath)
+        print("dirs: ", dirs)
+        print("files: ", files[:5])
+        print("\n\n")
 
 
 from manual_test_dirpath import test_path
 
-timer = RaiTimer()
 do_for_dir_recursively(test_path)
+RaiMemoryMeasure()
+
+
